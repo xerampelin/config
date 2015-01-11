@@ -8,7 +8,8 @@
 (defvar required-packages
   '(magit
     yasnippet
-    helm)
+    helm
+    evil)
   "a list of packages to ensure are installed at launch")
 
 (require 'cl)
