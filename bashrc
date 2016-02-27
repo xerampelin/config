@@ -59,6 +59,9 @@ export SBTOOLS_VNC_WINDOW_MGR=/usr/bin/openbox
 export PYTHONPATH=~/local/lib/python2.7/site-packages/
 export P4DIFF="diff -du"
 export P4MERGE=p4merge
+export CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH:$HOME/Qt/5.4/gcc_64/lib/cmake/Qt5Widgets/
+export d=$HOME/Dropbox/
+export b=$HOME/Dropbox/bren/
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then

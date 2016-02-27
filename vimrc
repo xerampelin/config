@@ -1,35 +1,57 @@
-set nocompatible
-filetype off
+set nocompatible              " be iMproved, required
+filetype off                  " required
 
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
 
-" let Vundle manage Vundle
-Bundle 'gmarik/vundle'
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
 
-" original repos on github
-" vim-scripts repos
-Bundle 'DoxygenToolkit.vim'
-Bundle 'a.vim'
-Bundle 'taglist.vim'
-Bundle 'vcscommand.vim'
-Bundle 'xmledit'
-Bundle 'asciidoc.vim'
-Bundle 'ctrlp.vim'
-" Bundle 'valgrind.vim'
-" non github repos
+" The following are examples of different formats supported.
+" Keep Plugin commands between vundle#begin/end.
+" plugin on GitHub repo
+"Plugin 'tpope/vim-fugitive'
+" plugin from http://vim-scripts.org/vim/scripts.html
+"Plugin 'L9'
+" Git plugin not hosted on GitHub
+"Plugin 'git://git.wincent.com/command-t.git'
+" git repos on your local machine (i.e. when working on your own plugin)
+"Plugin 'file:///home/gmarik/path/to/plugin'
+" The sparkup vim script is in a subdirectory of this repo called vim.
+" Pass the path to set the runtimepath properly.
+"Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+" Install L9 and avoid a Naming conflict if you've already installed a
+" different version somewhere else.
+"Plugin 'ascenator/L9', {'name': 'newL9'}
 
+Plugin 'Valloric/YouCompleteMe'
+Plugin 'ctrlpvim/ctrlp.vim'
+"Plugin 'Shougo/unite.vim'
+Plugin 'majutsushi/tagbar'
+Plugin 'tpope/vim-sensible'
+"Plugin 'SirVer/ultisnips'
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+
+filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
 "
 " Brief help
-" :BundleList          - list configured bundles
-" :BundleInstall(!)    - install(update) bundles
-" :BundleSearch(!) foo - search(or refresh cache first) for foo
-" :BundleClean(!)      - confirm(or auto-approve) removal of unused bundles
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
 "
 " see :h vundle for more details or wiki for FAQ
-" NOTE: comments after Bundle command are not allowed..
+" Put your non-Plugin stuff after this line
 
 
+set dir=~/.vimswap/
 set softtabstop=4
 set shiftwidth=4
 set expandtab
@@ -49,6 +71,7 @@ set scrolloff=2 "scroll at 2 lines to bottom
 set guioptions-=l "no left scrollbar
 set guioptions-=r "no right scrollbar
 set guioptions-=T "no toolbar
+set guioptions+=m "no menu
 set textwidth=80
 " see help fo-table
 set formatoptions+=tcrq
@@ -64,13 +87,12 @@ set completeopt=menuone,longest
 set guifont=DejaVu\ Sans\ Mono\ 10
 set popt=paper:letter,syntax:y,number:y
 set tags=tags;/
-
-"enable detecting filetype, ft-plugins, and ft-indent
-filetype plugin indent on 
-color koehler
+set exrc
+set secure
+let mapleader = "\<Space>"
+color default
 syntax on
 
-" :set filetype -- shows the current filetype
 " help autocmd-events to see list of events
 augroup Makefiles
     au!
@@ -78,81 +100,99 @@ augroup Makefiles
     au BufEnter,BufNewFile *.mak setlocal noet ts=8 sts=8 sw=8 nowrap
 augroup END
 
-augroup xml
-    au!
-    au BufRead,BufNewFile *.fpage,*.fdoc setlocal filetype=xml
-    au FileType xml setlocal foldmethod=syntax
-augroup END
+au BufNewFile,BufRead *.arxml set filetype=xml
 
-augroup clang
-    au!
-    au BufNewFile *.c,*.h,*.cc,*.cpp 0r ~/scripts/header
-    au BufNewFile,BufRead *.c,*.h,*.cc,*.cpp nnoremap <leader>c I//<esc>
-    "autocmd FileType c,cpp setlocal fmr={,}
-    "autocmd FileType c,cpp setlocal fdm=marker
-    "autocmd FileType c,cpp setlocal foldcolumn=1
-    "autocmd FileType c,cpp,h setlocal cindent
-augroup END
+set makeprg=$HOME/bin/compile-command.sh
+"set makeprg=sbmake\ -distcc\ SEPARATE_DEBUG_SYMBOLS=\ DEBUG=1\ VERBOSE=1"
+"set makeprg=sbmake\ SEPARATE_DEBUG_SYMBOLS=\ DEBUG=1\ VERBOSE=1"
 
-" au! FileType python :iabbrev <buffer> iff if:<left>
-" au! BufWrite * :echom "Writing Buffer!"
-
-" vim -b : edit binary using xxd-format!
-augroup Binary
-    au!
-    au BufReadPre  *.bin let &bin=1
-    au BufReadPost *.bin if &bin | %!xxd
-    au BufReadPost *.bin set ft=xxd | endif
-    au BufWritePre *.bin if &bin | %!xxd -r
-    au BufWritePre *.bin endif
-    au BufWritePost *.bin if &bin | %!xxd
-    au BufWritePost *.bin set nomod | endif
-augroup END
-
-augroup docbook
-    au!
-    au BufRead,BufNewFile *.xml iabbrev _dtd <?xml version='1.0'?><cr> <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-    au BufRead,BufNewFile *.xml iabbrev _t <title>
-    au BufRead,BufNewFile *.xml iabbrev _r <reference id="
-    au BufRead,BufNewFile *.xml iabbrev _re <refentry>
-    au BufRead,BufNewFile *.xml iabbrev _rnd <refnamediv>
-    au BufRead,BufNewFile *.xml iabbrev _rn <refname>
-    au BufRead,BufNewFile *.xml iabbrev _rp <refpurpose>
-    au BufRead,BufNewFile *.xml iabbrev _rs1 <refsect1>
-    au BufRead,BufNewFile *.xml iabbrev _rs2 <refsect2>
-    au BufRead,BufNewFile *.xml iabbrev _rs3 <refsect3>
-    au BufRead,BufNewFile *.xml iabbrev _fs <functionsynopsis>
-    au BufRead,BufNewFile *.xml iabbrev _fp <functionprototype>
-    au BufRead,BufNewFile *.xml iabbrev _fd <functiondef>
-augroup END
-
-augroup txt
-    au!
-    au BufRead,BufNewFile *.txt unset textwidth=0
-augroup END
-
-"set makeprg=make\ -C/users/bchandle/src/fooproject/
-
-nnoremap <leader>ev <esc>:vsp $MYVIMRC<cr>
-nnoremap <leader>sv <esc>:source $MYVIMRC<cr>
-nnoremap :PrettyXML :%!xmllint --format --encode UTF-8 -
-nnoremap <C-wq> <nop>
-nnoremap :2html :source $VIMRUNTIME/syntax/2html.vim
+" Leader c compile/execute/translate etc commands
+command! NoJumpMake make! | copen
+nnoremap <leader>cv <esc>:source $MYVIMRC<cr>
+nnoremap <leader>cs :w<cr>:!seqdiag %; eog %:r.png<cr>
+nnoremap <leader>cp :!p4 edit %<cr>
+nnoremap <leader>cr :NoJumpMake<cr>
 nnoremap <leader>cd :cd %:p:h<cr>:pwd<cr>
-nnoremap <F1> :TlistToggle<CR>
 
-inoremap jk <esc>
+" Leader f --> filesystem related
+nnoremap <leader>fc :let @"=expand("%:p")<cr>
+nnoremap <leader>fg :e <cname><cr>
+nnoremap <leader>ff :CtrlP<cr>
+nnoremap <leader>fb :CtrlPMRU<cr>
+nnoremap <leader>ft :NERDTreeToggle<cr>
+nnoremap <Leader>fw :w<CR>
+nnoremap <leader>fed <esc>:vsp $MYVIMRC<cr>
 
-" Surround selection with parenthesis.  Only works starting
-" at the end of the visual selection.
-vnoremap <leader>( <esc>a)<esc>gvo<esc>i(<esc>f)
+" Leader y copy/paste, yanking, etc
+vmap <Leader>yy "+y
+vmap <Leader>yd "+d
+nmap <Leader>yp "+p
+nmap <Leader>yP "+P
+vmap <Leader>yp "+p
+vmap <Leader>yP "+P
 
-"onoremap p i(
-"onoremap b /return<cr>
-onoremap in( :<c-u>normal! 0f)vi(<cr>
+" Leader b --> buffer related
+nnoremap <leader>bb :CtrlPBuffer<cr>
 
-" iabbrev <buffer> --- &mdash;
-iabbrev __modeline /* -*- mode: c; indent-tabs-mode: nil; c-basic-offset: 4; -*- */<cr>/* vim: set expandtab shiftwidth=4 softtabstop=4 : */
+" Leader s --> search related
+" not working  nnoremap <leader>sl :echom <c-r><c-w> expand("%")<cr>:cwin<cr>
 
-let g:valgrind_arguments='--leak-check=yes --num-callers=5000'
+nmap <Leader><Leader> V
+
+" Leader w --> window management
+nnoremap <leader>wj :wincmd j<cr>
+nnoremap <leader>wk :wincmd k<cr>
+nnoremap <leader>wl :wincmd l<cr>
+nnoremap <leader>wh :wincmd h<cr>
+
+nnoremap <leader>wJ :wincmd J<cr>
+nnoremap <leader>wK :wincmd K<cr>
+nnoremap <leader>wL :wincmd L<cr>
+nnoremap <leader>wH :wincmd H<cr>
+
+" Unsorted mappings
+nnoremap <leader>hex :%!xxd<cr>
+nnoremap <leader>nohex :%!xxd -r
+nnoremap <leader>st :grep -R <c-r><c-w> .<cr><cr>:cwin<cr>
+
+" Other Mappings
+nnoremap <C-l> 5zl
+nnoremap <C-h> 5zh
+nnoremap <C-wq> <nop>
+nnoremap <leader>xmllint :%!xmllint --format --encode UTF-8 -
+nnoremap :2html :source $VIMRUNTIME/syntax/2html.vim
+nnoremap <f12> :next<cr>
+nnoremap <f11> :prev<cr>
+nnoremap <f7> :TlistOpen<cr>
+
+nnoremap <leader>w :match Error /\v +$/<cr>
+nnoremap <leader>W :match none<cr>
+nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>/<C-R><C-W><CR>
+
+" file name
+inoremap <leader>fn <C-R>=expand("%:t:r")<cr>
+
+" YouCompleteMe Config ------------------------------
+let g:ycm_key_list_select_completion = ['<C-j>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<C-k>', '<Up>']
+let g:ycm_confirm_extra_conf = 0
+" end YouCompleteMe Config --------------------------
+
+" CtrlP configuration --------------------------
+" The Silver Searcher
+if executable('ag')
+  " Use ag over grep
+  set grepprg=ag\ --nogroup\ --nocolor
+
+  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+
+  " ag is fast enough that CtrlP doesn't need to cache
+  let g:ctrlp_use_caching = 0
+endif
+
+let g:ctrlp_cmd = 'CtrlPMRU'
+let g:ctrlp_working_path_mode = 'a'
+" end CtrlP configuration ----------------------
+
 
